@@ -1,0 +1,171 @@
+@import "tailwindcss";
+
+/* ============================================
+   Aerith Design System — Theme Tokens
+   参照 docs/AERITH_UI_DESIGN.md
+   ============================================ */
+
+@theme inline {
+  /* --- Aerith Pink (主色) --- */
+  --color-aerith-50: #fef5f7;
+  --color-aerith-100: #fde8ee;
+  --color-aerith-200: #fbd0dd;
+  --color-aerith-300: #f8a8c0;
+  --color-aerith-400: #f27da0;
+  --color-aerith-500: #e85d88;
+  --color-aerith-600: #d63d6d;
+  --color-aerith-700: #b22d56;
+  --color-aerith-800: #8e2445;
+  --color-aerith-900: #6d1d38;
+
+  /* --- Lifestream Green (副色) --- */
+  --color-lifestream-50: #f0faf4;
+  --color-lifestream-100: #d9f2e4;
+  --color-lifestream-200: #b3e5c9;
+  --color-lifestream-300: #7dd3a8;
+  --color-lifestream-400: #4ac087;
+  --color-lifestream-500: #2da76d;
+  --color-lifestream-600: #228555;
+  --color-lifestream-700: #1c6a45;
+  --color-lifestream-800: #195438;
+  --color-lifestream-900: #15442e;
+
+  /* --- Lily Gold (点缀色) --- */
+  --color-lily-50: #fefce8;
+  --color-lily-100: #fef9c3;
+  --color-lily-200: #fef08a;
+  --color-lily-300: #fde047;
+  --color-lily-400: #facc15;
+  --color-lily-500: #eab308;
+  --color-lily-600: #ca8a04;
+  --color-lily-700: #a16207;
+  --color-lily-800: #854d0e;
+  --color-lily-900: #713f12;
+
+  /* --- Warm Neutrals (暖中性色) --- */
+  --color-warm-50: #fefcfa;
+  --color-warm-100: #fdf6ee;
+  --color-warm-200: #f5ebe0;
+  --color-warm-300: #e8d8c8;
+  --color-warm-400: #d4bfa8;
+  --color-warm-500: #b8a08a;
+  --color-warm-600: #9a8270;
+  --color-warm-700: #7a6658;
+  --color-warm-800: #5c4d42;
+  --color-warm-900: #3d332c;
+
+  /* --- Deep Tones (深色调) --- */
+  --color-deep-800: #2a2035;
+  --color-deep-900: #1a1525;
+  --color-deep-950: #0f0d17;
+
+  /* --- Fonts --- */
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-accent: var(--font-accent);
+
+  /* --- Border Radius --- */
+  --radius-soft: 0.75rem;
+  --radius-pill: 9999px;
+
+  /* --- Animation --- */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-gentle: cubic-bezier(0.25, 0.1, 0.25, 1.0);
+}
+
+/* ============================================
+   CSS Variables (non-utility)
+   ============================================ */
+
+:root {
+  /* Semantic colors */
+  --color-primary: var(--color-aerith-400);
+  --color-secondary: var(--color-lifestream-400);
+  --color-accent: var(--color-lily-400);
+  --color-surface: var(--color-warm-50);
+  --color-surface-alt: var(--color-warm-200);
+  --color-text: var(--color-deep-900);
+  --color-text-muted: var(--color-warm-600);
+  --color-text-on-dark: var(--color-warm-100);
+
+  /* Spacing */
+  --section-gap: clamp(4rem, 10vh, 8rem);
+  --component-gap: clamp(1.5rem, 3vw, 3rem);
+  --max-content: 72rem;
+
+  /* Glow effects */
+  --glow-pink: 0 0 40px rgba(242, 125, 160, 0.3);
+  --glow-green: 0 0 40px rgba(74, 192, 135, 0.25);
+  --glow-warm: 0 0 60px rgba(253, 246, 238, 0.4);
+  --glow-gold: 0 0 40px rgba(250, 204, 21, 0.25);
+
+  /* Glass */
+  --glass-bg-dark: rgba(255, 255, 255, 0.08);
+  --glass-border-dark: rgba(255, 255, 255, 0.12);
+  --glass-bg-light: rgba(255, 255, 255, 0.6);
+  --glass-border-light: rgba(255, 255, 255, 0.3);
+  --glass-blur: 16px;
+
+  /* Duration */
+  --duration-slow: 800ms;
+  --duration-normal: 400ms;
+  --duration-fast: 200ms;
+}
+
+/* ============================================
+   Base Styles
+   ============================================ */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-body), system-ui, sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: rgba(242, 125, 160, 0.3);
+  color: var(--color-deep-900);
+}
+
+/* Scrollbar styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-warm-100);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-aerith-300);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-aerith-400);
+}
+
+/* ============================================
+   Reduced Motion
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+}
