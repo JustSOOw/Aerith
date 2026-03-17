@@ -1,5 +1,6 @@
 import { cormorantGaramond, inter, cinzel } from "@/lib/fonts";
 import { siteMetadata } from "@/lib/metadata";
+import { CursorGlow } from "@/components/effects/CursorGlow";
 import "./globals.css";
 
 export const metadata = siteMetadata;
@@ -15,6 +16,7 @@ export default function RootLayout({
         className={`${cormorantGaramond.variable} ${inter.variable} ${cinzel.variable}`}
       >
         {children}
+        <CursorGlow />
       </body>
     </html>
   );

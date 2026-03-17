@@ -58,7 +58,7 @@ export function GalleryPreview() {
               viewport={{ once: true, amount: 0.2 }}
               transition={{ duration: 0.5, delay: i * 0.1 }}
             >
-              <AerithCard variant="dark" className="group overflow-hidden p-0">
+              <AerithCard variant="dark" className="image-hover-sweep group overflow-hidden p-0">
                 <div className="relative aspect-[4/3] overflow-hidden">
                   <Image
                     src={img.src}

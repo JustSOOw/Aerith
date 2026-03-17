@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { motion, useMotionValue, useSpring } from "motion/react";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
@@ -8,29 +8,36 @@ export function CursorGlow() {
   const reducedMotion = useReducedMotion();
   const [visible, setVisible] = useState(false);
   const [isHovering, setIsHovering] = useState(false);
+  const [enabled, setEnabled] = useState(false);
 
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
   const springX = useSpring(mouseX, { stiffness: 150, damping: 20 });
   const springY = useSpring(mouseY, { stiffness: 150, damping: 20 });
 
+  const handleMouseMove = useCallback(
+    (e: MouseEvent) => {
+      mouseX.set(e.clientX);
+      mouseY.set(e.clientY);
+      setVisible(true);
+    },
+    [mouseX, mouseY]
+  );
+
   useEffect(() => {
     if (reducedMotion) return;
 
-    // Only enable on non-touch devices
-    const isTouchDevice = "ontouchstart" in window;
+    // Only enable on non-touch, non-mobile devices
+    const isTouchDevice = "ontouchstart" in window || navigator.maxTouchPoints > 0;
     if (isTouchDevice) return;
 
-    const handleMouseMove = (e: MouseEvent) => {
-      mouseX.set(e.clientX);
-      mouseY.set(e.clientY);
-      if (!visible) setVisible(true);
-    };
+    setEnabled(true);
 
     const handleMouseOver = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      const isInteractive =
-        target.closest("a, button, [role='button'], input, textarea, select");
+      const isInteractive = target.closest(
+        "a, button, [role='button'], input, textarea, select"
+      );
       setIsHovering(!!isInteractive);
     };
 
@@ -48,9 +55,9 @@ export function CursorGlow() {
       document.documentElement.removeEventListener("mouseleave", handleMouseLeave);
       document.documentElement.removeEventListener("mouseenter", handleMouseEnter);
     };
-  }, [mouseX, mouseY, reducedMotion, visible]);
+  }, [reducedMotion, handleMouseMove]);
 
-  if (reducedMotion) return null;
+  if (!enabled) return null;
 
   return (
     <>
@@ -64,9 +71,9 @@ export function CursorGlow() {
           height: 300,
           translateX: "-50%",
           translateY: "-50%",
-          background: "radial-gradient(circle, rgba(250,204,21,0.08) 0%, transparent 70%)",
+          background:
+            "radial-gradient(circle, rgba(250,204,21,0.08) 0%, transparent 70%)",
           opacity: visible ? 1 : 0,
-          transition: "opacity 0.3s",
         }}
       />
 
@@ -78,16 +85,21 @@ export function CursorGlow() {
           y: springY,
           translateX: "-50%",
           translateY: "-50%",
-          width: isHovering ? 16 : 8,
-          height: isHovering ? 16 : 8,
-          backgroundColor: isHovering ? "#facc15" : "#f8a8c0",
-          boxShadow: isHovering
-            ? "0 0 20px rgba(250,204,21,0.5)"
-            : "0 0 12px rgba(248,168,192,0.5)",
-          opacity: visible ? 1 : 0,
-          transition: "width 0.2s, height 0.2s, background-color 0.2s, box-shadow 0.2s, opacity 0.3s",
         }}
-      />
+      >
+        <div
+          className="rounded-full transition-all duration-200"
+          style={{
+            width: isHovering ? 16 : 8,
+            height: isHovering ? 16 : 8,
+            backgroundColor: isHovering ? "#facc15" : "#f8a8c0",
+            boxShadow: isHovering
+              ? "0 0 20px rgba(250,204,21,0.5)"
+              : "0 0 12px rgba(248,168,192,0.5)",
+            opacity: visible ? 1 : 0,
+          }}
+        />
+      </motion.div>
     </>
   );
 }

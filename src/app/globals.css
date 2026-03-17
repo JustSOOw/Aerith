@@ -59,11 +59,6 @@
   --color-deep-900: #1a1525;
   --color-deep-950: #0f0d17;
 
-  /* --- Fonts --- */
-  --font-display: var(--font-display);
-  --font-body: var(--font-body);
-  --font-accent: var(--font-accent);
-
   /* --- Border Radius --- */
   --radius-soft: 0.75rem;
   --radius-pill: 9999px;
@@ -168,4 +163,50 @@ body {
   html {
     scroll-behavior: auto;
   }
+}
+
+/* ============================================
+   Focus States — §10.3 粉色光晕 outline
+   ============================================ */
+
+:focus-visible {
+  outline: 2px solid var(--color-aerith-400);
+  outline-offset: 2px;
+  box-shadow: 0 0 12px rgba(242, 125, 160, 0.3);
+  border-radius: 4px;
+}
+
+/* ============================================
+   Image Hover Light Sweep — §6.3
+   ============================================ */
+
+@keyframes lightSweep {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.image-hover-sweep {
+  position: relative;
+  overflow: hidden;
+}
+
+.image-hover-sweep::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 100%
+  );
+  pointer-events: none;
+  transition: none;
+}
+
+.image-hover-sweep:hover::after {
+  animation: lightSweep 0.6s ease-out;
 }

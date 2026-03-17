@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/cn";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
@@ -31,26 +31,42 @@ const PETAL_COLORS = [
   "#b3e5c9", // green (rare)
 ];
 
+// Simple seeded random to avoid hydration mismatch
+function seededRandom(seed: number) {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+function generatePetals(density: number, speed: number): Petal[] {
+  return Array.from({ length: density }, (_, i) => {
+    const r = (n: number) => seededRandom(i * 7 + n * 13 + 42);
+    return {
+      id: i,
+      left: `${r(0) * 100}%`,
+      size: 8 + r(1) * 12,
+      duration: (15 + r(2) * 15) / speed,
+      delay: r(3) * -20,
+      rotation: r(4) * 360,
+      opacity: 0.3 + r(5) * 0.4,
+      color: PETAL_COLORS[Math.floor(r(6) * PETAL_COLORS.length)],
+      swayAmount: 30 + r(7) * 60,
+    };
+  });
+}
+
 export function FloatingPetals({
   density = 20,
   speed = 1,
   className,
 }: FloatingPetalsProps) {
   const reducedMotion = useReducedMotion();
+  const [petals, setPetals] = useState<Petal[]>([]);
 
-  const petals = useMemo<Petal[]>(() => {
-    return Array.from({ length: density }, (_, i) => ({
-      id: i,
-      left: `${Math.random() * 100}%`,
-      size: 8 + Math.random() * 12,
-      duration: (15 + Math.random() * 15) / speed,
-      delay: Math.random() * -20,
-      rotation: Math.random() * 360,
-      opacity: 0.3 + Math.random() * 0.4,
-      color: PETAL_COLORS[Math.floor(Math.random() * PETAL_COLORS.length)],
-      swayAmount: 30 + Math.random() * 60,
-    }));
+  useEffect(() => {
+    setPetals(generatePetals(density, speed));
   }, [density, speed]);
+
+  if (petals.length === 0) return null;
 
   if (reducedMotion) {
     return (
@@ -61,7 +77,7 @@ export function FloatingPetals({
             className="absolute rounded-[50%_50%_50%_0%]"
             style={{
               left: petal.left,
-              top: `${20 + Math.random() * 60}%`,
+              top: `${20 + seededRandom(petal.id * 3 + 99) * 60}%`,
               width: petal.size,
               height: petal.size * 1.3,
               backgroundColor: petal.color,

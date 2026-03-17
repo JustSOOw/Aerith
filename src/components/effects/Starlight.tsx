@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState, useEffect } from "react";
 import { cn } from "@/lib/cn";
 import { useReducedMotion } from "@/hooks/useReducedMotion";
 
@@ -9,20 +9,43 @@ interface StarlightProps {
   className?: string;
 }
 
+function seededRandom(seed: number) {
+  const x = Math.sin(seed) * 10000;
+  return x - Math.floor(x);
+}
+
+interface Star {
+  id: number;
+  left: string;
+  top: string;
+  size: number;
+  duration: number;
+  delay: number;
+  color: string;
+}
+
 export function Starlight({ count = 40, className }: StarlightProps) {
   const reducedMotion = useReducedMotion();
+  const [stars, setStars] = useState<Star[]>([]);
 
-  const stars = useMemo(() => {
-    return Array.from({ length: count }, (_, i) => ({
-      id: i,
-      left: `${Math.random() * 100}%`,
-      top: `${Math.random() * 100}%`,
-      size: 1 + Math.random() * 2,
-      duration: 2 + Math.random() * 4,
-      delay: Math.random() * -6,
-      color: Math.random() > 0.85 ? "#fde047" : "#ffffff",
-    }));
+  useEffect(() => {
+    setStars(
+      Array.from({ length: count }, (_, i) => {
+        const r = (n: number) => seededRandom(i * 11 + n * 17 + 31);
+        return {
+          id: i,
+          left: `${r(0) * 100}%`,
+          top: `${r(1) * 100}%`,
+          size: 1 + r(2) * 2,
+          duration: 2 + r(3) * 4,
+          delay: r(4) * -6,
+          color: r(5) > 0.85 ? "#fde047" : "#ffffff",
+        };
+      })
+    );
   }, [count]);
+
+  if (stars.length === 0) return null;
 
   return (
     <div className={cn("pointer-events-none absolute inset-0 overflow-hidden", className)}>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { motion, AnimatePresence } from "motion/react";
 import { Container } from "@/components/layout/Container";
@@ -34,6 +34,36 @@ const images = [
 export default function GalleryPage() {
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
+  const goNext = useCallback(() => {
+    if (lightboxIndex !== null && lightboxIndex < images.length - 1) {
+      setLightboxIndex(lightboxIndex + 1);
+    }
+  }, [lightboxIndex]);
+
+  const goPrev = useCallback(() => {
+    if (lightboxIndex !== null && lightboxIndex > 0) {
+      setLightboxIndex(lightboxIndex - 1);
+    }
+  }, [lightboxIndex]);
+
+  const closeLightbox = useCallback(() => {
+    setLightboxIndex(null);
+  }, []);
+
+  // Keyboard navigation
+  useEffect(() => {
+    if (lightboxIndex === null) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") goPrev();
+      if (e.key === "ArrowRight") goNext();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, [lightboxIndex, closeLightbox, goNext, goPrev]);
+
   return (
     <>
       <Navbar />
@@ -66,7 +96,7 @@ export default function GalleryPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true, amount: 0.1 }}
                   transition={{ duration: 0.5, delay: (i % 3) * 0.1 }}
-                  className="group mb-4 cursor-pointer break-inside-avoid overflow-hidden rounded-[var(--radius-soft)]"
+                  className="image-hover-sweep group mb-4 cursor-pointer break-inside-avoid overflow-hidden rounded-[var(--radius-soft)]"
                   onClick={() => setLightboxIndex(i)}
                 >
                   <div className="relative overflow-hidden">
@@ -91,7 +121,7 @@ export default function GalleryPage() {
       </main>
       <Footer />
 
-      {/* Lightbox */}
+      {/* Lightbox with keyboard navigation */}
       <AnimatePresence>
         {lightboxIndex !== null && (
           <motion.div
@@ -100,7 +130,7 @@ export default function GalleryPage() {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-[100] flex items-center justify-center bg-deep-950/95 backdrop-blur-sm"
-            onClick={() => setLightboxIndex(null)}
+            onClick={closeLightbox}
           >
             <motion.div
               initial={{ scale: 0.9, opacity: 0 }}
@@ -125,7 +155,7 @@ export default function GalleryPage() {
               {lightboxIndex > 0 && (
                 <button
                   className="absolute left-[-3rem] top-1/2 -translate-y-1/2 text-warm-300 transition-colors hover:text-aerith-300"
-                  onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex - 1); }}
+                  onClick={(e) => { e.stopPropagation(); goPrev(); }}
                   aria-label="上一张"
                 >
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -136,7 +166,7 @@ export default function GalleryPage() {
               {lightboxIndex < images.length - 1 && (
                 <button
                   className="absolute right-[-3rem] top-1/2 -translate-y-1/2 text-warm-300 transition-colors hover:text-aerith-300"
-                  onClick={(e) => { e.stopPropagation(); setLightboxIndex(lightboxIndex + 1); }}
+                  onClick={(e) => { e.stopPropagation(); goNext(); }}
                   aria-label="下一张"
                 >
                   <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -148,8 +178,8 @@ export default function GalleryPage() {
               {/* Close button */}
               <button
                 className="absolute -top-10 right-0 text-warm-400 transition-colors hover:text-aerith-300"
-                onClick={() => setLightboxIndex(null)}
-                aria-label="关闭"
+                onClick={closeLightbox}
+                aria-label="关闭 (ESC)"
               >
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                   <path d="M18 6L6 18M6 6l12 12" />

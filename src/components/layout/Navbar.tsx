@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { cn } from "@/lib/cn";
+import { FloatingPetals } from "@/components/effects/FloatingPetals";
 import Link from "next/link";
 
 const navLinks = [
@@ -43,11 +44,13 @@ export function Navbar() {
         )}
       >
         <nav className="mx-auto flex h-16 max-w-[72rem] items-center justify-between px-6 md:px-8">
+          {/* Logo with glow */}
           <Link
             href="/"
-            className="font-[family-name:var(--font-accent)] text-lg tracking-wider text-warm-100 transition-colors hover:text-aerith-300"
+            className="group relative font-[family-name:var(--font-accent)] text-lg tracking-wider text-warm-100 transition-all hover:text-aerith-300"
           >
-            Aerith
+            <span className="relative z-10">Aerith</span>
+            <span className="absolute inset-0 -m-2 rounded-full bg-aerith-400/0 blur-lg transition-all duration-500 group-hover:bg-aerith-400/20" />
           </Link>
 
           {/* Desktop links */}
@@ -59,13 +62,18 @@ export function Navbar() {
                   className="group relative font-[family-name:var(--font-body)] text-sm text-warm-200 transition-colors hover:text-aerith-300"
                 >
                   {link.label}
+                  {/* Underline animation */}
                   <span className="absolute -bottom-1 left-0 h-px w-0 bg-aerith-400 transition-all duration-300 group-hover:w-full" />
+                  {/* Petal decoration on hover */}
+                  <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 text-[8px] text-aerith-300 opacity-0 transition-all duration-300 group-hover:opacity-100">
+                    ✿
+                  </span>
                 </Link>
               </li>
             ))}
           </ul>
 
-          {/* Mobile menu button */}
+          {/* Mobile menu button — vine-style lines */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="flex flex-col gap-1.5 md:hidden"
@@ -73,21 +81,21 @@ export function Navbar() {
           >
             <motion.span
               animate={menuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
-              className="block h-px w-6 bg-warm-200"
+              className="block h-px w-6 rounded-full bg-warm-200"
             />
             <motion.span
               animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
-              className="block h-px w-6 bg-warm-200"
+              className="block h-px w-4 rounded-full bg-aerith-300"
             />
             <motion.span
               animate={menuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
-              className="block h-px w-6 bg-warm-200"
+              className="block h-px w-6 rounded-full bg-warm-200"
             />
           </button>
         </nav>
       </motion.header>
 
-      {/* Mobile menu overlay */}
+      {/* Mobile menu overlay with floating petals */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
@@ -97,7 +105,8 @@ export function Navbar() {
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-40 flex items-center justify-center backdrop-blur-[20px] bg-deep-950/90"
           >
-            <nav className="flex flex-col items-center gap-8">
+            <FloatingPetals density={12} speed={0.6} />
+            <nav className="relative z-10 flex flex-col items-center gap-8">
               {navLinks.map((link, i) => (
                 <motion.div
                   key={link.href}

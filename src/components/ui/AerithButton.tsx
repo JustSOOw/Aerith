@@ -1,5 +1,7 @@
+"use client";
+
 import { cn } from "@/lib/cn";
-import { type ButtonHTMLAttributes } from "react";
+import { type ButtonHTMLAttributes, type MouseEvent, useRef } from "react";
 
 interface AerithButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: "primary" | "secondary" | "ghost" | "golden";
@@ -28,19 +30,58 @@ export function AerithButton({
   size = "md",
   className,
   children,
+  onClick,
   ...props
 }: AerithButtonProps) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
+  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
+    // Ripple effect
+    if (variant !== "ghost" && buttonRef.current) {
+      const button = buttonRef.current;
+      const rect = button.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+
+      const ripple = document.createElement("span");
+      ripple.style.cssText = `
+        position: absolute;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 70%);
+        width: 0; height: 0;
+        left: ${x}px; top: ${y}px;
+        transform: translate(-50%, -50%);
+        pointer-events: none;
+        animation: buttonRipple 0.5s ease-out forwards;
+      `;
+      button.appendChild(ripple);
+      setTimeout(() => ripple.remove(), 500);
+    }
+
+    onClick?.(e);
+  };
+
   return (
-    <button
-      className={cn(
-        "inline-flex items-center justify-center font-[family-name:var(--font-body)] font-medium transition-all duration-200",
-        variantStyles[variant],
-        sizeStyles[size],
-        className
-      )}
-      {...props}
-    >
-      {children}
-    </button>
+    <>
+      <style>{`
+        @keyframes buttonRipple {
+          0% { width: 0; height: 0; opacity: 1; }
+          100% { width: 200px; height: 200px; opacity: 0; }
+        }
+      `}</style>
+      <button
+        ref={buttonRef}
+        className={cn(
+          "relative inline-flex items-center justify-center overflow-hidden font-[family-name:var(--font-body)] font-medium transition-all duration-200",
+          variantStyles[variant],
+          sizeStyles[size],
+          className
+        )}
+        onClick={handleClick}
+        {...props}
+      >
+        {children}
+      </button>
+    </>
   );
 }
