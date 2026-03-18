@@ -4,15 +4,11 @@ import path from "path";
 export interface PageInfo {
   name: string;
   href: string;
+  isModule: boolean; // true = 有 _components 等私有目录的复杂模块
 }
 
-// 内置页面（不在自动发现中显示）
 const BUILTIN_ROUTES = new Set(["", "gallery", "about"]);
 
-/**
- * 扫描 src/app 目录下的所有页面路由
- * 用于自动发现扩展页面
- */
 export function discoverPages(): PageInfo[] {
   const appDir = path.join(process.cwd(), "src", "app");
   const pages: PageInfo[] = [];
@@ -25,20 +21,23 @@ export function discoverPages(): PageInfo[] {
       if (entry.name.startsWith("_") || entry.name.startsWith("[")) continue;
       if (BUILTIN_ROUTES.has(entry.name)) continue;
 
-      // 检查目录下是否有 page.tsx 或 page.ts
+      const dirPath = path.join(appDir, entry.name);
       const hasPage =
-        fs.existsSync(path.join(appDir, entry.name, "page.tsx")) ||
-        fs.existsSync(path.join(appDir, entry.name, "page.ts"));
+        fs.existsSync(path.join(dirPath, "page.tsx")) ||
+        fs.existsSync(path.join(dirPath, "page.ts"));
 
-      if (hasPage) {
-        pages.push({
-          name: entry.name,
-          href: `/${entry.name}`,
-        });
-      }
+      if (!hasPage) continue;
+
+      // 检查是否有私有子目录 → 复杂模块
+      const children = fs.readdirSync(dirPath, { withFileTypes: true });
+      const isModule = children.some(
+        (c) => c.isDirectory() && c.name.startsWith("_")
+      );
+
+      pages.push({ name: entry.name, href: `/${entry.name}`, isModule });
     }
   } catch {
-    // 目录不存在或读取失败时返回空数组
+    // ignore
   }
 
   return pages;
