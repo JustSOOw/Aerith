@@ -1,19 +1,16 @@
-import { HeroSection } from "@/components/homepage/HeroSection";
-import { AboutSection } from "@/components/homepage/AboutSection";
-import { GalleryPreview } from "@/components/homepage/GalleryPreview";
-import { QuoteSection } from "@/components/homepage/QuoteSection";
-import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
+import { GardenHome } from "@/components/homepage/GardenHome";
+import { discoverPages } from "@/lib/discover-pages";
 
 export default function Home() {
+  const extensionPages = discoverPages();
+
   return (
     <>
       <Navbar />
       <main>
-        <HeroSection />
-        <AboutSection />
-        <GalleryPreview />
-        <QuoteSection />
+        <GardenHome extensionPages={extensionPages} />
       </main>
       <Footer />
     </>

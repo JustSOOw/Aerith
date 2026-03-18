@@ -44,7 +44,6 @@ export function Navbar() {
         )}
       >
         <nav className="mx-auto flex h-16 max-w-[72rem] items-center justify-between px-6 md:px-8">
-          {/* Logo with glow */}
           <Link
             href="/"
             className="group relative font-[family-name:var(--font-accent)] text-lg tracking-wider text-warm-100 transition-all hover:text-aerith-300"
@@ -53,7 +52,6 @@ export function Navbar() {
             <span className="absolute inset-0 -m-2 rounded-full bg-aerith-400/0 blur-lg transition-all duration-500 group-hover:bg-aerith-400/20" />
           </Link>
 
-          {/* Desktop links */}
           <ul className="hidden items-center gap-8 md:flex">
             {navLinks.map((link) => (
               <li key={link.href}>
@@ -62,63 +60,37 @@ export function Navbar() {
                   className="group relative font-[family-name:var(--font-body)] text-sm text-warm-200 transition-colors hover:text-aerith-300"
                 >
                   {link.label}
-                  {/* Underline animation */}
                   <span className="absolute -bottom-1 left-0 h-px w-0 bg-aerith-400 transition-all duration-300 group-hover:w-full" />
-                  {/* Petal decoration on hover */}
-                  <span className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 text-[8px] text-aerith-300 opacity-0 transition-all duration-300 group-hover:opacity-100">
-                    ✿
-                  </span>
                 </Link>
               </li>
             ))}
           </ul>
 
-          {/* Mobile menu button — vine-style lines */}
           <button
             onClick={() => setMenuOpen(!menuOpen)}
             className="flex flex-col gap-1.5 md:hidden"
             aria-label={menuOpen ? "关闭菜单" : "打开菜单"}
           >
-            <motion.span
-              animate={menuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
-              className="block h-px w-6 rounded-full bg-warm-200"
-            />
-            <motion.span
-              animate={menuOpen ? { opacity: 0 } : { opacity: 1 }}
-              className="block h-px w-4 rounded-full bg-aerith-300"
-            />
-            <motion.span
-              animate={menuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
-              className="block h-px w-6 rounded-full bg-warm-200"
-            />
+            <motion.span animate={menuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }} className="block h-px w-6 bg-warm-200" />
+            <motion.span animate={menuOpen ? { opacity: 0 } : { opacity: 1 }} className="block h-px w-4 bg-aerith-300" />
+            <motion.span animate={menuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }} className="block h-px w-6 bg-warm-200" />
           </button>
         </nav>
       </motion.header>
 
-      {/* Mobile menu overlay with floating petals */}
       <AnimatePresence>
         {menuOpen && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
             className="fixed inset-0 z-40 flex items-center justify-center backdrop-blur-[20px] bg-deep-950/90"
           >
             <FloatingPetals density={12} speed={0.6} />
             <nav className="relative z-10 flex flex-col items-center gap-8">
               {navLinks.map((link, i) => (
-                <motion.div
-                  key={link.href}
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }}
-                >
-                  <Link
-                    href={link.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="font-[family-name:var(--font-display)] text-3xl text-warm-100 transition-colors hover:text-aerith-300"
-                  >
+                <motion.div key={link.href} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}>
+                  <Link href={link.href} onClick={() => setMenuOpen(false)} className="font-[family-name:var(--font-display)] text-3xl text-warm-100 transition-colors hover:text-aerith-300">
                     {link.label}
                   </Link>
                 </motion.div>
